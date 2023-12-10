@@ -2,9 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ $default-branch, "fix*" ]
+    branches: [ "main", "fix*" ]
   pull_request:
-    branches: [ $default-branch, "fix*" ]
+    branches: [ "main", "fix*" ]
 
   workflow_dispatch:
 
@@ -17,12 +17,14 @@ jobs:
     strategy:
       matrix:
         config:
-          #- { name: "msvc", os: windows-latest, cc: "cl", cxx: "cl" }
-          #- { name: "clang (windows)", os: windows-latest, cc: "clang", cxx: "clang++" }
-          #- { name: "gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
-          #- { name: "clang (ubuntu)", os: ubuntu-latest, cc: "clang", cxx: "clang++" }
-          - { name: "clang (macos)", os: macos-latest, cc: "clang-17", cxx: "$(brew --prefix llvm@17)/bin/clang++" }
-          #- { name: "gcc (macos)", os: macos-latest, cc: "gcc", cxx: "g++" }
+          - { name: "msvc", os: windows-latest, cxx: "cl" }
+          #- { name: "clang (windows)", os: windows-latest, cxx: "clang++" }
+          #- { name: "gcc", os: ubuntu-latest, cxx: "g++" }
+          #- { name: "clang (ubuntu)", os: ubuntu-latest, cxx: "clang++" }
+          #- { name: "clang (macos)", os: macos-latest, cxx: "$(brew --prefix llvm@17)/bin/clang++" }
+          #- { name: "gcc (macos)", os: macos-latest, cxx: "g++" }
+
+    name: ${{ matrix.config.name }}
 
     steps:
       - name: Checkout
