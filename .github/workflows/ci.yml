@@ -1,0 +1,46 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ $default-branch, "fix*" ]
+  pull_request:
+    branches: [ $default-branch, "fix*" ]
+
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - { name: "msvc", os: windows-latest, cc: "cl", cxx: "cl" }
+          - { name: "clang (windows)", os: windows-latest, cc: "clang", cxx: "clang++" }
+          #- { name: "gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
+          #- { name: "clang (ubuntu)", os: ubuntu-latest, cc: "clang", cxx: "clang++" }
+          #- { name: "clang (macos)", os: macos-latest, cc: "clang", cxx: "clang++" }
+          #- { name: "gcc (macos)", os: macos-latest, cc: "gcc", cxx: "g++" }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Developer Command Prompt (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install CMake And Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "~3.28.0"
+
+      - name: Config
+        run: >-
+          cmake -G Ninja -B build
+          -D CMAKE_CXX_COMPILER=${{ matrix.config.cxx }}
+
+      - name: Build
+        run: cmake --build ./build --config Release
