@@ -44,7 +44,7 @@ jobs:
         run: brew install llvm@17
 
       - name: Install clang (ubuntu)
-        if: runner.os == 'Ubuntu'
+        if: runner.os == 'Linux'
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
