@@ -18,9 +18,9 @@ jobs:
       matrix:
         config:
           - { name: "msvc", os: windows-latest, cc: "cl", cxx: "cl" }
-          - { name: "clang (windows)", os: windows-latest, cc: "clang", cxx: "clang++" }
+          #- { name: "clang (windows)", os: windows-latest, cc: "clang", cxx: "clang++" }
           #- { name: "gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
-          #- { name: "clang (ubuntu)", os: ubuntu-latest, cc: "clang", cxx: "clang++" }
+          - { name: "clang (ubuntu)", os: ubuntu-latest, cc: "clang", cxx: "clang++" }
           #- { name: "clang (macos)", os: macos-latest, cc: "clang", cxx: "clang++" }
           #- { name: "gcc (macos)", os: macos-latest, cc: "gcc", cxx: "g++" }
 
