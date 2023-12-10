@@ -55,7 +55,7 @@ jobs:
       - name: Install clang (windows)
         if: matrix.config.name == 'clang (windows)'
         run: |
-          choco install llvm
+          choco install llvm --version=17.0.6
 
       - name: Config
         run: >-
