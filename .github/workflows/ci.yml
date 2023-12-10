@@ -21,7 +21,7 @@ jobs:
           #- { name: "clang (windows)", os: windows-latest, cxx: "clang++" }
           #- { name: "gcc", os: ubuntu-latest, cxx: "g++" }
           #- { name: "clang (ubuntu)", os: ubuntu-latest, cxx: "clang++-17" }
-          - { name: "clang (macos)", os: macos-latest, cxx: "$(brew --prefix llvm@17)/bin/clang++" }
+          - { name: "clang (macos)", os: macos-13, cxx: "$(brew --prefix llvm@17)/bin/clang++" }
           #- { name: "gcc (macos)", os: macos-latest, cxx: "g++" }
 
     name: ${{ matrix.config.name }}
