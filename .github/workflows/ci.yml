@@ -32,11 +32,11 @@ jobs:
     steps:
       - name: Compute Outputs
         run: |
-          echo "LINUX_RUNNER_VERSION: ${{ env.LINUX_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
+          echo "LINUX_RUNNER_VERSION=${{ env.LINUX_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
           echo "LINUX_CLANG_VERSION=${{ env.LINUX_CLANG_VERSION }}" >> $GITHUB_OUTPUT
-          echo "MACOS_RUNNER_VERSION: ${{ env.MACOS_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
+          echo "MACOS_RUNNER_VERSION=${{ env.MACOS_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
           echo "MACOS_CLANG_VERSION=${{ env.MACOS_CLANG_VERSION }}" >> $GITHUB_OUTPUT
-          echo "WINDOWS_RUNNER_VERSION: ${{ env.WINDOWS_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
+          echo "WINDOWS_RUNNER_VERSION=${{ env.WINDOWS_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
           echo "WINDOWS_CLANG_VERSION=${{ env.WINDOWS_CLANG_VERSION }}" >> $GITHUB_OUTPUT
           echo "BUILD_TYPE=${{ env.BUILD_TYPE }}" >> $GITHUB_OUTPUT
 
