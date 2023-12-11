@@ -9,23 +9,36 @@ on:
   workflow_dispatch:
 
 env:
-  BUILD_TYPE: Release
+  LINUX_RUNNER_VERSION: ubuntu-latest
   LINUX_CLANG_VERSION: 17
+  MACOS_RUNNER_VERSION: macos-13
   MACOS_CLANG_VERSION: 17
+  WINDOWS_RUNNER_VERSION: windows-latest
   WINDOWS_CLANG_VERSION: 17.0.6
+  BUILD_TYPE: Release
 
 jobs:
   compute:
     runs-on: ubuntu-latest
     outputs:
+      LINUX_RUNNER_VERSION: ${{ env.LINUX_RUNNER_VERSION }}
+      LINUX_CLANG_VERSION: ${{ env.LINUX_CLANG_VERSION }}
+      MACOS_RUNNER_VERSION: ${{ env.MACOS_RUNNER_VERSION }}
+      MACOS_CLANG_VERSION: ${{ env.MACOS_CLANG_VERSION }}
+      WINDOWS_RUNNER_VERSION: ${{ env.WINDOWS_RUNNER_VERSION }}
+      WINDOWS_CLANG_VERSION: ${{ env.WINDOWS_CLANG_VERSION }}
       BUILD_TYPE: ${{ env.BUILD_TYPE }}
+
     steps:
       - name: Compute Outputs
         run: |
-          echo "BUILD_TYPE=${{ env.BUILD_TYPE }}" >> $GITHUB_OUTPUT
+          echo "LINUX_RUNNER_VERSION: ${{ env.LINUX_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
           echo "LINUX_CLANG_VERSION=${{ env.LINUX_CLANG_VERSION }}" >> $GITHUB_OUTPUT
+          echo "MACOS_RUNNER_VERSION: ${{ env.MACOS_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
           echo "MACOS_CLANG_VERSION=${{ env.MACOS_CLANG_VERSION }}" >> $GITHUB_OUTPUT
+          echo "WINDOWS_RUNNER_VERSION: ${{ env.WINDOWS_RUNNER_VERSION }}" >> $GITHUB_OUTPUT
           echo "WINDOWS_CLANG_VERSION=${{ env.WINDOWS_CLANG_VERSION }}" >> $GITHUB_OUTPUT
+          echo "BUILD_TYPE=${{ env.BUILD_TYPE }}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ${{ matrix.config.os }}
@@ -34,12 +47,12 @@ jobs:
     strategy:
       matrix:
         config:
-          - { name: "clang (ubuntu)", os: ubuntu-latest, cxx: "clang++-${{ needs.compute.outputs.LINUX_CLANG_VERSION }}" }
-          #- { name: "gcc (ubuntu)", os: ubuntu-latest, cxx: "g++" }
-          - { name: "clang (macos)", os: macos-13, cxx: "$(brew --prefix llvm@${{ needs.compute.outputs.MACOS_CLANG_VERSION }})/bin/clang++" }
-          #- { name: "gcc (macos)", os: macos-latest, cxx: "g++" }
-          - { name: "clang (windows)", os: windows-latest, cxx: "clang++" }
-          - { name: "msvc (windows)", os: windows-latest, cxx: "cl" }
+          - { name: "clang (ubuntu)", os: "${{ needs.compute.outputs.LINUX_RUNNER_VERSION }}", cxx: "clang++-${{ needs.compute.outputs.LINUX_CLANG_VERSION }}" }
+          #- { name: "gcc (ubuntu)", os: "${{ needs.compute.outputs.LINUX_RUNNER_VERSION }}", cxx: "g++" }
+          - { name: "clang (macos)", os: "${{ needs.compute.outputs.MACOS_RUNNER_VERSION }}", cxx: "$(brew --prefix llvm@${{ needs.compute.outputs.MACOS_CLANG_VERSION }})/bin/clang++" }
+          #- { name: "gcc (macos)", os: "${{ needs.compute.outputs.MACOS_RUNNER_VERSION }}", cxx: "g++" }
+          - { name: "clang (windows)", os: "${{ needs.compute.outputs.WINDOWS_RUNNER_VERSION }}", cxx: "clang++" }
+          - { name: "msvc (windows)", os: "${{ needs.compute.outputs.WINDOWS_RUNNER_VERSION }}", cxx: "cl" }
 
     name: ${{ matrix.config.name }}
 
