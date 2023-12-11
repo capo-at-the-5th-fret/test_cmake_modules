@@ -8,7 +8,7 @@ target_sources(test_modules
     PUBLIC
         FILE_SET CXX_MODULES
         FILES
-            mymod.cppm
+            mymod.cpp
 )
 
 target_compile_features(test_modules PUBLIC cxx_std_23)

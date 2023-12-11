@@ -10,19 +10,36 @@ on:
 
 env:
   BUILD_TYPE: Release
+  LINUX_CLANG_VERSION: 17
+  MACOS_CLANG_VERSION: 17
+  WINDOWS_CLANG_VERSION: 17.0.6
 
 jobs:
+  compute:
+    runs-on: ubuntu-latest
+    outputs:
+      BUILD_TYPE: ${{ env.BUILD_TYPE }}
+    steps:
+      - name: Compute Outputs
+        run: |
+          echo "BUILD_TYPE=${{ env.BUILD_TYPE }}" >> $GITHUB_OUTPUT
+          echo "LINUX_CLANG_VERSION=${{ env.LINUX_CLANG_VERSION }}" >> $GITHUB_OUTPUT
+          echo "MACOS_CLANG_VERSION=${{ env.MACOS_CLANG_VERSION }}" >> $GITHUB_OUTPUT
+          echo "WINDOWS_CLANG_VERSION=${{ env.WINDOWS_CLANG_VERSION }}" >> $GITHUB_OUTPUT
+
   build:
     runs-on: ${{ matrix.config.os }}
+    needs: compute
+
     strategy:
       matrix:
         config:
-          - { name: "msvc", os: windows-latest, cxx: "cl" }
-          - { name: "clang (windows)", os: windows-latest, cxx: "clang++" }
-          #- { name: "gcc", os: ubuntu-latest, cxx: "g++" }
-          - { name: "clang (ubuntu)", os: ubuntu-latest, cxx: "clang++-17" }
-          - { name: "clang (macos)", os: macos-13, cxx: "$(brew --prefix llvm@17)/bin/clang++" }
+          - { name: "clang (ubuntu)", os: ubuntu-latest, cxx: "clang++-${{ needs.compute.outputs.LINUX_CLANG_VERSION }}" }
+          #- { name: "gcc (ubuntu)", os: ubuntu-latest, cxx: "g++" }
+          - { name: "clang (macos)", os: macos-13, cxx: "$(brew --prefix llvm@${{ needs.compute.outputs.MACOS_CLANG_VERSION }})/bin/clang++" }
           #- { name: "gcc (macos)", os: macos-latest, cxx: "g++" }
+          - { name: "clang (windows)", os: windows-latest, cxx: "clang++" }
+          - { name: "msvc (windows)", os: windows-latest, cxx: "cl" }
 
     name: ${{ matrix.config.name }}
 
@@ -30,33 +47,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Developer Command Prompt (Windows)
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-
       - name: Install CMake And Ninja
         uses: lukka/get-cmake@latest
         with:
           cmakeVersion: "~3.28.0"
 
-      - name: Install clang (macos)
+      - name: Install clang (MacOS)
         if: runner.os == 'MacOS'
         run: |
-          brew install llvm@17
+          brew install llvm@${{ env.MACOS_CLANG_VERSION }}
 
       # NOTE: 'all' must be present or a CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS-NOTFOUND error will occur.
       # Reference: https://discourse.cmake.org/t/cmake-3-28-cmake-cxx-compiler-clang-scan-deps-notfound-not-found/9244/3
-      - name: Install clang (ubuntu)
+      - name: Install clang (Linux)
         if: runner.os == 'Linux'
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 17 all
+          sudo ./llvm.sh ${{ env.LINUX_CLANG_VERSION }} all
 
-      - name: Install clang (windows)
+      - name: Install clang (Windows)
         if: matrix.config.name == 'clang (windows)'
         run: |
-          choco install llvm --version=17.0.6
+          choco install llvm --version=${{ env.WINDOWS_CLANG_VERSION }}
+
+      - name: Enable Developer Command Prompt (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Config
         run: >-
@@ -64,4 +81,4 @@ jobs:
           -D CMAKE_CXX_COMPILER=${{ matrix.config.cxx }}
 
       - name: Build
-        run: cmake --build ./build --config Release
+        run: cmake --build ./build --config ${{ env.BUILD_TYPE }}
